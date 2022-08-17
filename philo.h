@@ -17,24 +17,30 @@
 #include <string.h>
 #include <stdlib.h>
 # include <pthread.h>
+ #include <sys/time.h>
 #include <unistd.h>
 
-		pthread_t *t;
-	pthread_mutex_t *mutex;
-	pthread_mutex_t m;
+
+typedef struct s_inside
+{
+	pthread_mutex_t	*mutex;
+	pthread_mutex_t	dead;
+}	t_inside;
+
 typedef struct s_philo {
 	int nb;
 	int i;
+	float time_beg;
 	int nb_of_forks;
-	int time_to_die;
+	float time_to_die;
 	int time_to_sleep;
 	int time_to_eat;
 	int nb_of_eat;
+	float time_start;
+	t_inside *set;
 	struct s_philo *next;
 }				t_philo;
-typedef struct s_ph {
-	t_philo *philo;
-	struct timeval time;
-}	t_phe;
+
+
 
 #endif
