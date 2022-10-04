@@ -25,6 +25,7 @@ typedef struct s_inside
 {
 	pthread_mutex_t	*mutex;
 	pthread_mutex_t	dead;
+	int			all;
 }	t_inside;
 
 typedef struct s_philo {
@@ -36,7 +37,7 @@ typedef struct s_philo {
 	int time_to_sleep;
 	int time_to_eat;
 	int nb_of_eat;
-	float time_start;
+	int time_start;
 	t_inside *set;
 	struct s_philo *next;
 }				t_philo;
