@@ -22,14 +22,21 @@ void check_death(t_philo *arg)
 {	
 	int i;
 	i = get_time_now();
-		pthread_mutex_lock(&arg->set->dead);
+	pthread_mutex_lock(&arg->set->dead);
 	if(i - arg->time_start > arg->time_to_die)
 	{
-		printf("\nPHIlO %d Died \n",arg->i + 1);
+		ft_print("Philosopher ", arg, " is Dead \n");
 		exit(1);
 	}
 	else
 	{
+		if(arg->nb_of_eat != -1)
+		{
+			if(arg->k[0] == 0)
+			{
+				exit(0);
+			}
+		}
 		pthread_mutex_unlock(&arg->set->dead);
 		usleep(30);
 	}
@@ -39,7 +46,7 @@ void eating(t_philo *philo)
 {
 	long start;
 	start = get_time_now();
-	printf("\nPhilosopher % d is eating ", philo->i + 1);
+	ft_print("Philosopher ", philo, " is eating \n");
 	while (get_time_now() - start < philo->time_to_eat)
 	{
 		usleep(100);
@@ -49,7 +56,7 @@ void eating(t_philo *philo)
 void sleeping(t_philo *philo)
 {
 	long i;
-	printf("\nPhilosopher % d is sleeping ", philo->i + 1);
+	ft_print("Philosopher ", philo, " is sleeping \n");
 	i = get_time_now();
 	while (get_time_now() - i < philo->time_to_sleep)
 	{
@@ -63,17 +70,26 @@ void routine(void *arg)
 	philo = arg;
 	while(1)
 	{
+		if(philo->nb_of_eat == 0)
+		{
+			while(1);
+		}
 		usleep(30);
 		pthread_mutex_lock(&philo->set->mutex[philo->i]);
-		printf("\nPhilosopher % d picks up the left fork ", philo->i + 1);
+		ft_print("Philosopher ",philo," picks up the left fork \n");
 		pthread_mutex_lock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
-		printf("\nPhilosopher % d picks up the right fork ", philo->i + 1);
+		ft_print("Philosopher ",philo," picks up the right fork \n");
 		eating(philo);
+		if(philo->nb_of_eat > 0)
+		{
+			philo->nb_of_eat--;
+			philo->k[0]--;
+		}
 		philo->time_start = get_time_now();
 		pthread_mutex_unlock(&philo->set->mutex[philo->i]);
-		printf("\nPhilosopher % d places down the left fork ",philo->i + 1);
+		ft_print("Philosopher ",philo," places down the left fork \n");
 		pthread_mutex_unlock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
-		printf("\nPhilosopher % d places down the right fork ",philo->i + 1);
+		ft_print("Philosopher ",philo," places down the right fork \n");
 		sleeping(philo);
 	}
 }
@@ -82,13 +98,20 @@ void philosophers(t_philo arg)
 	pthread_t *t;
     int i;
 	t_philo *philo;
+	int *all;
+	all = malloc(sizeof(int)* 2);
 	t_philo *head;
 	t_inside *tools;
 
+	if(arg.nb_of_eat != -1)
+	{
+		all[0] = (arg.nb * arg.nb_of_eat);
+	}
 	tools = malloc(sizeof(tools) * 3);
 	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb + 1);
 	t = malloc(sizeof(pthread_t) * arg.nb + 1);
 	pthread_mutex_init(&tools->dead, NULL);
+	pthread_mutex_init(&tools->write, NULL);
 	philo = malloc(sizeof(t_philo) * 9);
 	philo = NULL;
 	i = 0;
@@ -100,10 +123,11 @@ void philosophers(t_philo arg)
 	i = arg.nb - 1;
 	while(0 <= i)
 	{
-		head = malloc(sizeof(t_philo) * 9);
+		head = malloc(sizeof(t_philo) * 10);
 		head->time_beg = arg.time_beg;
-		head->set = malloc(sizeof(head->set) * 3);
+		head->set = malloc(sizeof(head->set) * 4);
 		head->nb = arg.nb;
+		head->k = all;
     	head->nb_of_forks = arg.nb;
 		head->time_start = arg.time_start;
     	head->time_to_die = arg.time_to_die;
@@ -115,7 +139,6 @@ void philosophers(t_philo arg)
 		philo = head;
 		i--;
 	}
-
 		i = 0;
 		head = philo;
 		while(i < arg.nb)
@@ -160,7 +183,7 @@ void philosophers(t_philo arg)
 int main(int argc,char **argv)
 {
     t_philo arg;
-	if(argc == 5)
+	if(argc == 5 || argc == 6)
 	{
 		arg.time_beg = get_time_now();
     	arg.nb = atoi(argv[1]);
@@ -169,6 +192,10 @@ int main(int argc,char **argv)
     	arg.time_to_die = atoi(argv[2]);
     	arg.time_to_eat = atoi(argv[3]);
     	arg.time_to_sleep = atoi(argv[4]);
+		if(argc == 5)
+			arg.nb_of_eat = -1;
+		else
+			arg.nb_of_eat = atoi(argv[5]);
 		philosophers(arg);
 	}
 }

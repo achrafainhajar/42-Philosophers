@@ -17,7 +17,7 @@
 #include <string.h>
 #include <stdlib.h>
 # include <pthread.h>
- #include <sys/time.h>
+#include <sys/time.h> 
 #include <unistd.h>
 
 
@@ -25,7 +25,7 @@ typedef struct s_inside
 {
 	pthread_mutex_t	*mutex;
 	pthread_mutex_t	dead;
-	int			all;
+	pthread_mutex_t	write;
 }	t_inside;
 
 typedef struct s_philo {
@@ -38,10 +38,13 @@ typedef struct s_philo {
 	int time_to_eat;
 	int nb_of_eat;
 	int time_start;
+	int *k;
 	t_inside *set;
 	struct s_philo *next;
 }				t_philo;
 
-
-
+void	ft_putstr(char *s);
+void	ft_putchar(char c);
+void	ft_putnbr(int n);
+void	ft_print(char *s1,t_philo *head,char *s2);
 #endif
