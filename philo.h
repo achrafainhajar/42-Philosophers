@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:59:46 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/07 18:31:33 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/08 19:31:48 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@ typedef struct s_inside
 	pthread_mutex_t	*mutex;
 	pthread_mutex_t	dead;
 	pthread_mutex_t	write;
+	int			death;
+	int			eated;
 }	t_inside;
 
 typedef struct s_philo {
 	int nb;
 	int i;
 	long time_beg;
-	int nb_of_forks;
 	int time_to_die;
 	int time_to_sleep;
 	int time_to_eat;

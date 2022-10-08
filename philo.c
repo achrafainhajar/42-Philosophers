@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/08 19:19:49 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/08 19:37:45 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ void check_death(t_philo *arg)
 	if (i - arg->time_start > arg->time_to_die)
 	{
 		pthread_mutex_lock(&arg->set->dead);
-		exit(1);
+		ft_print("",arg," Died\n");
+		arg->set->death = 0;
 	}
 	else
 	{
@@ -33,7 +34,7 @@ void check_death(t_philo *arg)
 		{
 			if (arg->k[0] == 0)
 			{
-				exit(0);
+				arg->set->eated = 0;
 			}
 		}
 		pthread_mutex_unlock(&arg->set->dead);
@@ -68,7 +69,7 @@ void routine(void *arg)
 {
 	t_philo *philo;
 	philo = arg;
-	while(1)
+	while(philo->set->death && philo->set->eated)
 	{
 		if(philo->nb_of_eat == 0)
 		{
@@ -85,9 +86,7 @@ void routine(void *arg)
 			philo->k[0]--;
 		}
 		pthread_mutex_unlock(&philo->set->mutex[philo->i]);
-		//ft_print("Philosopher ",philo," places down the left fork \n");
 		pthread_mutex_unlock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
-		//ft_print("Philosopher ",philo," places down the right fork \n");
 		sleeping(philo);
 	}
 }
@@ -107,6 +106,8 @@ void philosophers(t_philo arg)
 	}
 	tools = malloc(sizeof(t_inside));
 	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb);
+	tools->death = 1;
+	tools->eated = 1;
 	t = malloc(sizeof(pthread_t) * arg.nb);
 	pthread_mutex_init(&tools->dead, NULL);
 	pthread_mutex_init(&tools->write, NULL);
@@ -124,7 +125,6 @@ void philosophers(t_philo arg)
 		head->time_beg = arg.time_beg;
 		head->nb = arg.nb;
 		head->k = all;
-    	head->nb_of_forks = arg.nb;
 		head->time_beg = arg.time_beg;
 		head->time_start = arg.time_start;
     	head->time_to_die = arg.time_to_die;
@@ -156,7 +156,7 @@ void philosophers(t_philo arg)
 	}
 	head = philo;
 	i = 1;
-	while (1)
+	while (head->set->eated && head->set->death)
 	{
 		check_death(head);
 		if(i == head->nb)
@@ -173,12 +173,12 @@ void philosophers(t_philo arg)
 int main(int argc,char **argv)
 {
     t_philo arg;
+
 	if(argc == 5 || argc == 6)
 	{
 		arg.time_beg = get_time_now();
     	arg.nb = atoi(argv[1]);
 		arg.time_start = get_time_now();
-    	arg.nb_of_forks = arg.nb;
     	arg.time_to_die = atoi(argv[2]);
     	arg.time_to_eat = atoi(argv[3]);
     	arg.time_to_sleep = atoi(argv[4]);
