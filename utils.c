@@ -41,7 +41,7 @@ void	ft_putnbr(int n)
 }
 void ft_print(char *s1,t_philo *head,char *s2)
 {
-    pthread_mutex_lock(&head->set->write);
-    printf("%s%d%s",s1,head->i + 1,s2);
-    pthread_mutex_unlock(&head->set->write);
+    	pthread_mutex_lock(&head->set->write);
+    printf("%ld %s%d%s",(get_time_now() - head->time_beg),s1,head->i + 1,s2);
+    	pthread_mutex_unlock(&head->set->write);
 }

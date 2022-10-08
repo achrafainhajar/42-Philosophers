@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/07/23 16:12:49 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/08 19:19:49 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,29 +16,27 @@ long get_time_now(void)
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec *  1000) + (tv.tv_usec / 1000));
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 void check_death(t_philo *arg)
 {	
-	int i;
+	int	i;
 	i = get_time_now();
-	pthread_mutex_lock(&arg->set->dead);
-	if(i - arg->time_start > arg->time_to_die)
+	if (i - arg->time_start > arg->time_to_die)
 	{
-		ft_print("Philosopher ", arg, " is Dead \n");
+		pthread_mutex_lock(&arg->set->dead);
 		exit(1);
 	}
 	else
 	{
-		if(arg->nb_of_eat != -1)
+		if (arg->nb_of_eat != -1)
 		{
-			if(arg->k[0] == 0)
+			if (arg->k[0] == 0)
 			{
 				exit(0);
 			}
 		}
 		pthread_mutex_unlock(&arg->set->dead);
-		usleep(30);
 	}
 }
 
@@ -46,7 +44,8 @@ void eating(t_philo *philo)
 {
 	long start;
 	start = get_time_now();
-	ft_print("Philosopher ", philo, " is eating \n");
+	ft_print("", philo, " is eating\n");
+	philo->time_start = get_time_now();
 	while (get_time_now() - start < philo->time_to_eat)
 	{
 		usleep(100);
@@ -56,12 +55,13 @@ void eating(t_philo *philo)
 void sleeping(t_philo *philo)
 {
 	long i;
-	ft_print("Philosopher ", philo, " is sleeping \n");
+	ft_print("", philo, " is sleeping\n");
 	i = get_time_now();
 	while (get_time_now() - i < philo->time_to_sleep)
 	{
 		usleep(100);
 	}
+	ft_print("", philo, " is thinking\n");
 }
 
 void routine(void *arg)
@@ -74,45 +74,42 @@ void routine(void *arg)
 		{
 			while(1);
 		}
-		usleep(30);
 		pthread_mutex_lock(&philo->set->mutex[philo->i]);
-		ft_print("Philosopher ",philo," picks up the left fork \n");
+		ft_print("",philo," has taken a fork\n");
 		pthread_mutex_lock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
-		ft_print("Philosopher ",philo," picks up the right fork \n");
+		ft_print("",philo," has taken a fork\n");
 		eating(philo);
 		if(philo->nb_of_eat > 0)
 		{
 			philo->nb_of_eat--;
 			philo->k[0]--;
 		}
-		philo->time_start = get_time_now();
 		pthread_mutex_unlock(&philo->set->mutex[philo->i]);
-		ft_print("Philosopher ",philo," places down the left fork \n");
+		//ft_print("Philosopher ",philo," places down the left fork \n");
 		pthread_mutex_unlock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
-		ft_print("Philosopher ",philo," places down the right fork \n");
+		//ft_print("Philosopher ",philo," places down the right fork \n");
 		sleeping(philo);
 	}
 }
 void philosophers(t_philo arg)
 {
-	pthread_t *t;
+	pthread_t *t = NULL;
     int i;
-	t_philo *philo;
 	int *all;
-	all = malloc(sizeof(int)* 2);
-	t_philo *head;
-	t_inside *tools;
+	all = malloc(sizeof(int));
+	t_philo *philo = NULL;
+	t_philo *head = NULL;
+	t_inside *tools = NULL;
 
 	if(arg.nb_of_eat != -1)
 	{
 		all[0] = (arg.nb * arg.nb_of_eat);
 	}
-	tools = malloc(sizeof(tools) * 3);
-	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb + 1);
-	t = malloc(sizeof(pthread_t) * arg.nb + 1);
+	tools = malloc(sizeof(t_inside));
+	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb);
+	t = malloc(sizeof(pthread_t) * arg.nb);
 	pthread_mutex_init(&tools->dead, NULL);
 	pthread_mutex_init(&tools->write, NULL);
-	philo = malloc(sizeof(t_philo) * 9);
 	philo = NULL;
 	i = 0;
 	while(i < arg.nb)
@@ -123,12 +120,12 @@ void philosophers(t_philo arg)
 	i = arg.nb - 1;
 	while(0 <= i)
 	{
-		head = malloc(sizeof(t_philo) * 10);
+		head = (t_philo *) malloc(sizeof(t_philo));
 		head->time_beg = arg.time_beg;
-		head->set = malloc(sizeof(head->set) * 4);
 		head->nb = arg.nb;
 		head->k = all;
     	head->nb_of_forks = arg.nb;
+		head->time_beg = arg.time_beg;
 		head->time_start = arg.time_start;
     	head->time_to_die = arg.time_to_die;
     	head->time_to_eat = arg.time_to_eat;
@@ -139,26 +136,25 @@ void philosophers(t_philo arg)
 		philo = head;
 		i--;
 	}
-		i = 0;
-		head = philo;
-		while(i < arg.nb)
-		{
-			head->i = i;
-			usleep(30);
-			pthread_create(&t[i],NULL, (void *) routine, head);
-			head = head->next;
-			i+=2;
-		}
-		i = 1;
-		while(i < arg.nb)
-		{
-			head->i = i;
-			usleep(30);
-			pthread_create(&t[i],NULL, (void *) routine, head);
-			head = head->next;
-			i+=2;
-		}
-		head = philo;
+	i = 0;
+	head = philo;
+	while(i < arg.nb)
+	{
+		head->i = i;
+		pthread_create(&t[i],NULL, (void *) routine, head);
+		head = head->next;
+		i+=2;
+	}
+	usleep(100);
+	i = 1;
+	while(i < arg.nb)
+	{
+		head->i = i;
+		pthread_create(&t[i],NULL, (void *) routine, head);
+		head = head->next;
+		i+=2;
+	}
+	head = philo;
 	i = 1;
 	while (1)
 	{
@@ -172,12 +168,6 @@ void philosophers(t_philo arg)
 		head = head->next;
 		i++;
 	}
-	while(i < arg.nb)
-	{
-		pthread_mutex_destroy(&tools->mutex[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&tools->dead);
 }
 
 int main(int argc,char **argv)
