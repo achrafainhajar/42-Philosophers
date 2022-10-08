@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/08 19:37:45 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/08 21:27:31 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ void philosophers(t_philo arg)
 	t = malloc(sizeof(pthread_t) * arg.nb);
 	pthread_mutex_init(&tools->dead, NULL);
 	pthread_mutex_init(&tools->write, NULL);
+	pthread_mutex_init(&tools->time, NULL);
 	philo = NULL;
 	i = 0;
 	while(i < arg.nb)
