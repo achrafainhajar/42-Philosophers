@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/08 21:27:31 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/09 18:18:06 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,13 @@ long get_time_now(void)
 }
 void check_death(t_philo *arg)
 {	
-	int	i;
+	long	i;
 	i = get_time_now();
 	if (i - arg->time_start > arg->time_to_die)
 	{
 		pthread_mutex_lock(&arg->set->dead);
-		ft_print("",arg," Died\n");
+		pthread_mutex_lock(&arg->set->write);
+		printf("%ld %d%s",(get_time_now() - arg->time_beg),arg->i + 1," Died\n");
 		arg->set->death = 0;
 	}
 	else
@@ -35,8 +36,10 @@ void check_death(t_philo *arg)
 			if (arg->k[0] == 0)
 			{
 				arg->set->eated = 0;
+				exit(1);
 			}
 		}
+		pthread_mutex_unlock(&arg->set->time);
 		pthread_mutex_unlock(&arg->set->dead);
 	}
 }
@@ -45,8 +48,8 @@ void eating(t_philo *philo)
 {
 	long start;
 	start = get_time_now();
-	ft_print("", philo, " is eating\n");
 	philo->time_start = get_time_now();
+	ft_print("", philo, " is eating\n");
 	while (get_time_now() - start < philo->time_to_eat)
 	{
 		usleep(100);
@@ -63,18 +66,18 @@ void sleeping(t_philo *philo)
 		usleep(100);
 	}
 	ft_print("", philo, " is thinking\n");
+	if(philo->nb_of_eat == 0)
+		philo->nb_of_eat = -2;
 }
 
 void routine(void *arg)
 {
 	t_philo *philo;
 	philo = arg;
-	while(philo->set->death && philo->set->eated)
+	while(philo->set->death)
 	{
-		if(philo->nb_of_eat == 0)
-		{
-			while(1);
-		}
+		if(philo->i % 2)
+			usleep(1500);
 		pthread_mutex_lock(&philo->set->mutex[philo->i]);
 		ft_print("",philo," has taken a fork\n");
 		pthread_mutex_lock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
@@ -82,8 +85,10 @@ void routine(void *arg)
 		eating(philo);
 		if(philo->nb_of_eat > 0)
 		{
+			pthread_mutex_lock(&philo->set->eat);
 			philo->nb_of_eat--;
 			philo->k[0]--;
+			pthread_mutex_unlock(&philo->set->eat);
 		}
 		pthread_mutex_unlock(&philo->set->mutex[philo->i]);
 		pthread_mutex_unlock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
@@ -110,6 +115,7 @@ void philosophers(t_philo arg)
 	tools->eated = 1;
 	t = malloc(sizeof(pthread_t) * arg.nb);
 	pthread_mutex_init(&tools->dead, NULL);
+	pthread_mutex_init(&tools->eat, NULL);
 	pthread_mutex_init(&tools->write, NULL);
 	pthread_mutex_init(&tools->time, NULL);
 	philo = NULL;
