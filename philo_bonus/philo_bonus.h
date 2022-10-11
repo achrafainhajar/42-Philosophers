@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/06/26 18:59:46 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/09 19:54:36 by aainhaja         ###   ########.fr       */
+/*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
+/*   Updated: 2022/10/10 16:42:26 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-#define PHILO_H
+#ifndef PHILO_BONUS_H
+#define PHILO_BONUS_H
 
 #include <stdio.h>
 #include <string.h>
@@ -21,16 +21,13 @@
 #include <unistd.h>
 #include <semaphore.h>
 
-
 typedef struct s_inside
 {
-	pthread_mutex_t	*mutex;
-	pthread_mutex_t	dead;
-	pthread_mutex_t	write;
-	pthread_mutex_t time;
-	pthread_mutex_t eat;
-	int			death;
-	int			eated;
+	sem_t *sem;
+	sem_t *write;
+	sem_t *d;
+	pthread_t death;
+	int dead;
 }	t_inside;
 
 typedef struct s_philo {
@@ -41,12 +38,13 @@ typedef struct s_philo {
 	int time_to_sleep;
 	int time_to_eat;
 	int nb_of_eat;
+	int pid;
 	long time_start;
 	int *k;
 	t_inside *set;
 	struct s_philo *next;
 }				t_philo;
-sem_t *sem;
+
 void	ft_putstr(char *s);
 void	ft_putchar(char c);
 void	ft_putnbr(int n);
