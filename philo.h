@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:59:46 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/09 19:54:36 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/15 16:35:26 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_inside
 	pthread_mutex_t	write;
 	pthread_mutex_t time;
 	pthread_mutex_t eat;
+	pthread_mutex_t *rc;
 	int			death;
 	int			eated;
 }	t_inside;

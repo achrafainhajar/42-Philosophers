@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/10 16:42:26 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/14 15:06:42 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@
 #include <stdlib.h>
 # include <pthread.h>
 #include <sys/time.h> 
+#include <sys/signal.h>
 #include <unistd.h>
+#include <signal.h>
+
 #include <semaphore.h>
 
 typedef struct s_inside

@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/10 16:18:11 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/15 17:26:20 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void check_death(t_philo *arg)
 {	
 	long	i;
 	i = get_time_now();
+			pthread_mutex_lock(&arg->set->eat);
 	if (i - arg->time_start > arg->time_to_die)
 	{
 		pthread_mutex_lock(&arg->set->dead);
@@ -39,16 +40,23 @@ void check_death(t_philo *arg)
 				exit(1);
 			}
 		}
+		pthread_mutex_unlock(&arg->set->eat);
 		pthread_mutex_unlock(&arg->set->time);
-		pthread_mutex_unlock(&arg->set->dead);
 	}
 }
 
 void eating(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->set->eat);
+	if(philo->nb_of_eat > 0)
+	{
+		philo->nb_of_eat--;
+		philo->k[0]--;
+	}
 	long start;
 	start = get_time_now();
 	philo->time_start = get_time_now();
+	pthread_mutex_unlock(&philo->set->eat);
 	ft_print("", philo, " is eating\n");
 	while (get_time_now() - start < philo->time_to_eat)
 	{
@@ -74,8 +82,12 @@ void routine(void *arg)
 {
 	t_philo *philo;
 	philo = arg;
-	while(philo->set->death)
+	while(1)
 	{
+		pthread_mutex_lock(&philo->set->dead);
+		if(philo->set->death == 0)
+			break;
+		pthread_mutex_unlock(&philo->set->dead);
 		if(philo->i % 2)
 			usleep(1500);
 		pthread_mutex_lock(&philo->set->mutex[philo->i]);
@@ -83,13 +95,6 @@ void routine(void *arg)
 		pthread_mutex_lock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
 		ft_print("",philo," has taken a fork\n");
 		eating(philo);
-		if(philo->nb_of_eat > 0)
-		{
-			pthread_mutex_lock(&philo->set->eat);
-			philo->nb_of_eat--;
-			philo->k[0]--;
-			pthread_mutex_unlock(&philo->set->eat);
-		}
 		pthread_mutex_unlock(&philo->set->mutex[philo->i]);
 		pthread_mutex_unlock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
 		sleeping(philo);
@@ -113,6 +118,7 @@ void philosophers(t_philo arg)
 	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb);
 	tools->death = 1;
 	tools->eated = 1;
+	tools->rc = malloc(sizeof(pthread_mutex_t) * arg.nb);
 	t = malloc(sizeof(pthread_t) * arg.nb);
 	pthread_mutex_init(&tools->dead, NULL);
 	pthread_mutex_init(&tools->eat, NULL);
@@ -123,6 +129,7 @@ void philosophers(t_philo arg)
 	while(i < arg.nb)
 	{
 		pthread_mutex_init(&tools->mutex[i], NULL);
+		pthread_mutex_init(&tools->rc[i], NULL);
 		i++;
 	}
 	i = arg.nb - 1;

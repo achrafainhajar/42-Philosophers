@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/10 16:47:23 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/15 17:08:38 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,14 @@ void check_death(t_philo *arg)
 	long	i;
 	while(arg->set->dead)
 	{
-		if(arg->set->dead)
-			sem_wait(arg->set->d);
-		else
-			exit(1);
 		i = get_time_now();
+		sem_wait(arg->set->d);
 		if (i - arg->time_start > arg->time_to_die)
 		{
+			sem_wait(arg->set->write);
 			printf("%ld %d%s",(get_time_now() - arg->time_beg),arg->i + 1," Died\n");
 			arg->set->dead = 0;
-			exit(1);
+			break;
 		}
 		else
 		{
@@ -41,12 +39,14 @@ void check_death(t_philo *arg)
 		}
 		sem_post(arg->set->d);
 	}
-	exit(1);
+	exit(0);
 }
 
 void ft_print(char *s1,t_philo *head,char *s2)
 {
+	sem_wait(head->set->write);
     	printf("%ld %s%d%s",(get_time_now() - head->time_beg),s1,head->i + 1,s2);
+	sem_post(head->set->write);
 }
 
 long get_time_now(void)
@@ -156,14 +156,20 @@ void philosophers1(t_philo arg)
         {
 			head->i = i;
 			routine(head);
-			exit(0);
         }
-		usleep(100);
 		head = head->next;
         i++;
     }
+	head = philo;
 	while(wait(NULL) > 0)
-		exit(1);
+	{
+		while(head)
+		{
+			kill(head->pid,SIGKILL);
+			head = head->next;
+		}
+	}
+
 }
 
 int main(int argc,char **argv)
