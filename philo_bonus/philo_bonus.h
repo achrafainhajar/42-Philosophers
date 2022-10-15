@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/14 15:06:42 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/15 21:05:52 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_inside
 	sem_t *sem;
 	sem_t *write;
 	sem_t *d;
+	sem_t *eat;
 	pthread_t death;
 	int dead;
 }	t_inside;
@@ -36,6 +37,7 @@ typedef struct s_inside
 typedef struct s_philo {
 	int nb;
 	int i;
+	int l;
 	long time_beg;
 	int time_to_die;
 	int time_to_sleep;
