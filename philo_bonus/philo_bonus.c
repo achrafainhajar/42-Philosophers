@@ -6,21 +6,20 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/15 22:03:00 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/16 23:17:25 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"philo_bonus.h"
 #include <semaphore.h>
 
-void check_death(t_philo *arg)
+void *check_death(t_philo *arg)
 {	
 	long	i;
 	while(arg->set->dead)
 	{
-			usleep(100);
 		i = get_time_now();
-		sem_wait(arg->set->eat);
+		usleep(100);
 		sem_wait(arg->set->d);
 		if (i - arg->time_start > arg->time_to_die)
 		{
@@ -31,20 +30,12 @@ void check_death(t_philo *arg)
 		}
 		else
 		{
-			if (arg->nb_of_eat != -1)
+			if (arg->nb_of_eat == 0)
 			{
-				sem_post(arg->set->eat);
-				sem_post(arg->set->d);
-				if(arg->l == 1)
-				{
-					sem_post(arg->set->sem);
-					sem_post(arg->set->sem);
-				}
-				exit(0);
+				return(NULL);
 			}
-			sem_post(arg->set->eat);
+			sem_post(arg->set->d);
 		}
-		sem_post(arg->set->d);
 	}
 	exit(1);
 }
@@ -67,16 +58,17 @@ long get_time_now(void)
 void eating(t_philo *philo)
 {
 	sem_wait(philo->set->eat);
+	if(philo->nb_of_eat > 0)
+		philo->nb_of_eat--;
 	long start;
 	start = get_time_now();
 	philo->time_start = get_time_now();
-	ft_print("", philo, " is eating\n");
 	sem_post(philo->set->eat);
+	ft_print("", philo, " is eating\n");
 	while (get_time_now() - start < philo->time_to_eat)
 	{
 		usleep(100);
 	}
-	sem_post(philo->set->eat);
 }
 
 void sleeping(t_philo *philo)
@@ -89,15 +81,13 @@ void sleeping(t_philo *philo)
 		usleep(100);
 	}
 	ft_print("", philo, " is thinking\n");
-	if(philo->nb_of_eat == 0)
-		philo->nb_of_eat = -2;
 }
 
 void routine(void *arg)
 {
 	t_philo *philo;
 	philo = arg;
-	while(philo->set->dead)
+	while(philo->nb_of_eat != 0)
 	{
 		if(philo->i % 2)
 			usleep(1500);
@@ -105,16 +95,10 @@ void routine(void *arg)
 		pthread_create(&philo->set->death,NULL,(void *)check_death,philo);
 		ft_print("",philo," has taken a fork\n");
 		sem_wait(philo->set->sem);
-		philo->l = 1;
 		ft_print("",philo," has taken a fork\n");
 		eating(philo);
-		if(philo->nb_of_eat > 0)
-		{
-			philo->nb_of_eat--;
-		}
 		sem_post(philo->set->sem);
 		sem_post(philo->set->sem);
-		philo->l = 0;
 		sleeping(philo);
 	}
 }
@@ -137,6 +121,7 @@ void philosophers1(t_philo arg)
 	sem_unlink("eat");
 	sem_unlink("d");
 	sem_unlink("write");
+	sem_unlink("time");
    	tools->sem = sem_open("forks", O_CREAT, 0600, arg.nb);
 	tools->d = sem_open("d", O_CREAT, 0600, 1);
 	tools->eat = sem_open("eat", O_CREAT, 0600, 1);
@@ -160,7 +145,6 @@ void philosophers1(t_philo arg)
 		head->set = tools;
 		head->next = philo;
 		head->set->dead = 1;
-		head->l = 0;
 		philo = head;
 		i--;
 	}
@@ -173,6 +157,7 @@ void philosophers1(t_philo arg)
         {
 			head->i = i;
 			routine(head);
+			exit(0);
         }
 		head = head->next;
         i++;

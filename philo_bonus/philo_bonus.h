@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/15 21:05:52 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/16 18:15:43 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ typedef struct s_inside
 {
 	sem_t *sem;
 	sem_t *write;
+	sem_t *time;
 	sem_t *d;
 	sem_t *eat;
 	pthread_t death;
