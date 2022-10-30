@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/30 07:09:20 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/30 07:36:08 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,37 @@ void philosophers1(t_philo arg)
 		}
 	}
 }
+void	ft_putstr_fd(char *s,int fd)
+{
+	int	i;
 
+	i = 0;
+	if (s)
+	{
+		while (s[i])
+		{
+			write(fd, &s[i], 1);
+			i++;
+		}
+	}
+}
+int ft_check(t_philo philo,int argc)
+{
+	if(philo.nb < 0 || philo.time_to_die < 0 || philo.time_to_eat < 0 || philo.time_to_sleep < 0)
+	{
+		ft_putstr_fd("Bad arguments\n",2);
+		return(0);
+	}
+	if(argc == 6)
+	{
+		if(philo.nb_of_eat < 0)
+		{
+			ft_putstr_fd("Bad arguments\n",2);
+			return(0);
+		}
+	}
+	return(1);
+}
 int main(int argc,char **argv)
 {
     t_philo arg;
@@ -183,6 +213,9 @@ int main(int argc,char **argv)
 			arg.nb_of_eat = -1;
 		else
 			arg.nb_of_eat = atoi(argv[5]);
-		philosophers1(arg);
+		if(ft_check(arg,argc))
+			philosophers1(arg);
 	}
+	else
+		ft_putstr_fd("Too many or few arguments\n",2);
 }
