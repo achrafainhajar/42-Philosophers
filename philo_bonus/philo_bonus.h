@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/16 18:15:43 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/10/30 06:55:52 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,9 @@ typedef struct s_philo {
 	int time_to_sleep;
 	int time_to_eat;
 	int nb_of_eat;
-	int pid;
-	long time_start;
+	pid_t pid;
+	struct timeval time_start;
+	int eated;
 	int *k;
 	t_inside *set;
 	struct s_philo *next;
