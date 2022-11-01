@@ -6,19 +6,11 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/10/16 23:24:50 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/01 08:57:25 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-long	get_time_now(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
 
 void	check_death(t_philo *arg)
 {	
@@ -30,7 +22,7 @@ void	check_death(t_philo *arg)
 	{
 		pthread_mutex_lock(&arg->set->dead);
 		pthread_mutex_lock(&arg->set->write);
-		printf("%ld %d%s", (get_time_now() - arg->time_beg),
+		printf("%ld %d%s", (i - arg->time_beg),
 			arg->i + 1, " Died\n");
 		arg->set->death = 0;
 	}
@@ -45,7 +37,6 @@ void	check_death(t_philo *arg)
 			}
 		}
 		pthread_mutex_unlock(&arg->set->eat);
-		pthread_mutex_unlock(&arg->set->time);
 	}
 }
 
@@ -108,96 +99,14 @@ void	routine(void *arg)
 	}
 }
 
-void philosophers(t_philo arg)
-{
-	pthread_t	*t;
-    int			i;
-	int			*all;
-	t_philo	*philo;
-	t_philo	*head;
-	t_inside	*tools;
-
-	all = malloc(sizeof(int));
-	if (arg.nb_of_eat != -1)
-	{
-		all[0] = (arg.nb * arg.nb_of_eat);
-	}
-	tools = malloc(sizeof(t_inside));
-	tools->mutex = malloc(sizeof(pthread_mutex_t) * arg.nb);
-	tools->death = 1;
-	tools->eated = 1;
-	tools->rc = malloc(sizeof(pthread_mutex_t) * arg.nb);
-	t = malloc(sizeof(pthread_t) * arg.nb);
-	pthread_mutex_init(&tools->dead, NULL);
-	pthread_mutex_init(&tools->eat, NULL);
-	pthread_mutex_init(&tools->write, NULL);
-	pthread_mutex_init(&tools->time, NULL);
-	philo = NULL;
-	i = 0;
-	while (i < arg.nb)
-	{
-		pthread_mutex_init(&tools->mutex[i], NULL);
-		pthread_mutex_init(&tools->rc[i], NULL);
-		i++;
-	}
-	i = arg.nb - 1;
-	while (0 <= i)
-	{
-		head = (t_philo *) malloc(sizeof(t_philo));
-		head->time_beg = arg.time_beg;
-		head->nb = arg.nb;
-		head->k = all;
-		head->time_beg = arg.time_beg;
-		head->time_start = arg.time_start;
-		head->time_to_die = arg.time_to_die;
-		head->time_to_eat = arg.time_to_eat;
-		head->time_to_sleep = arg.time_to_sleep;
-		head->nb_of_eat = arg.nb_of_eat;
-		head->set = tools;
-		head->next = philo;
-		philo = head;
-		i--;
-	}
-	i = 0;
-	head = philo;
-	while (i < arg.nb)
-	{
-		head->i = i;
-		pthread_create(&t[i],NULL, (void *) routine, head);
-		head = head->next;
-		i += 2;
-	}
-	usleep(100);
-	i = 1;
-	while (i < arg.nb)
-	{
-		head->i = i;
-		pthread_create(&t[i],NULL, (void *) routine, head);
-		head = head->next;
-		i += 2;
-	}
-	head = philo;
-	i = 1;
-	while (head->set->eated && head->set->death)
-	{
-		check_death(head);
-		if (i == head->nb)
-		{
-			i = 1;
-			head = philo;
-			continue ;
-		}
-		head = head->next;
-		i++;
-	}
-}
-
 int	main(int argc, char **argv)
 {
 	t_philo	arg;
 
 	if (argc == 5 || argc == 6)
 	{
+		if (!ft_check_arg(argv))
+			return (1);
 		arg.time_beg = get_time_now();
 		arg.nb = atoi(argv[1]);
 		arg.time_start = get_time_now();
@@ -208,6 +117,9 @@ int	main(int argc, char **argv)
 			arg.nb_of_eat = -1;
 		else
 			arg.nb_of_eat = atoi(argv[5]);
-		philosophers(arg);
+		if (ft_check(arg, argc))
+			philosophers(arg);
 	}
+	else
+		ft_putstr_fd("Too many or few arguments\n", 2);
 }
