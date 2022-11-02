@@ -1,4 +1,4 @@
-SRC = philo_bonus.c utils.c init.c\
+SRC = philo_bonus.c utils.c init.c utils2.c\
 
 FLAGS = -Wall -Wextra -Werror
 CC = gcc

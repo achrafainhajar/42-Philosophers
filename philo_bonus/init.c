@@ -6,23 +6,17 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 08:48:16 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/02 08:28:15 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 12:08:56 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-t_philo	*create_philos(t_philo *philo, t_philo arg, t_inside *tools, int i)
+t_philo	*create_philos(t_philo arg, t_inside *tools, int i, int *all)
 {	
 	t_philo	*head;
-	int		*all;
+	t_philo	*philo;
 
-	all = NULL;
-	all = malloc(sizeof(int));
-	if (all == NULL)
-		return (NULL);
-	if (arg.nb_of_eat != -1)
-		all[0] = (arg.nb * arg.nb_of_eat);
 	while (0 <= i--)
 	{
 		head = (t_philo *) malloc(sizeof(t_philo));
@@ -76,18 +70,10 @@ void	w_process(t_philo *head)
 	}
 }
 
-void	philosophers1(t_philo	arg)
+void	ft_supervisor(t_philo *head, t_philo arg)
 {
-	int			i;
-	t_inside	*tools;
-	t_philo		*head;
-	t_philo		*philo;
+	int	i;
 
-	philo = NULL;
-	tools = NULL;
-	tools = create_sem(tools, arg);
-	philo = create_philos(philo, arg, tools, arg.nb - 1);
-	head = philo;
 	i = 0;
 	while (i < arg.nb)
 	{
@@ -101,29 +87,23 @@ void	philosophers1(t_philo	arg)
 		head = head->next;
 		i++;
 	}
-	w_process(philo);
 }
 
-int	ft_check_arg(char **str)
+void	philosophers1(t_philo	arg)
 {
-	int	i;
-	int	j;
+	t_inside	*tools;
+	t_philo		*philo;
+	int			*all;
 
-	j = 1;
-	i = 0;
-	while (str[j])
-	{
-		i = 0;
-		while (str[j][i])
-		{
-			if (!(str[j][i] <= '9' && str[j][i] >= '0'))
-			{
-				ft_putstr_fd("Bad arguments\n", 2);
-				return (0);
-			}
-			i++;
-		}
-		j++;
-	}
-	return (1);
+	all = malloc(sizeof(int));
+	if (all == NULL)
+		return ;
+	if (arg.nb_of_eat != -1)
+		all[0] = (arg.nb * arg.nb_of_eat);
+	philo = NULL;
+	tools = NULL;
+	tools = create_sem(tools, arg);
+	philo = create_philos(arg, tools, arg.nb - 1, all);
+	ft_supervisor(philo, arg);
+	w_process(philo);
 }
