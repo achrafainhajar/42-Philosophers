@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:59:46 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/01 08:54:58 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 08:01:10 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ typedef struct s_inside
 	pthread_mutex_t	write;
 	pthread_mutex_t	time;
 	pthread_mutex_t	eat;
-	pthread_mutex_t	*rc;
 	int				death;
 	int				eated;
 }	t_inside;
@@ -52,7 +51,7 @@ void		ft_putchar(char c);
 void		ft_putnbr(int n);
 long		get_time_now(void);
 void		ft_print(char *s1, t_philo *head, char *s2);
-t_philo		*create_philos(t_philo *philo, t_philo arg, t_inside *tools, int i);
+t_philo		*create_philos(t_philo arg, t_inside *tools, int i, int *all);
 void		ft_philoos(t_philo *head, pthread_t *t, int nb);
 void		philosophers(t_philo arg);
 void		routine(void *arg);
@@ -60,4 +59,5 @@ void		check_death(t_philo *arg);
 int			ft_check(t_philo philo, int argc);
 void		ft_putstr_fd(char *s, int fd);
 int			ft_check_arg(char **str);
+int			ft_atoi(const char	*str);
 #endif

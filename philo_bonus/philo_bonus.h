@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:08 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/01 08:58:44 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 06:54:17 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,4 +62,5 @@ void	philosophers1(t_philo	arg);
 void	routine(void *arg);
 void	*check_death(t_philo	*arg);
 int		ft_check_arg(char **str);
+int		ft_atoi(const char	*str);
 #endif

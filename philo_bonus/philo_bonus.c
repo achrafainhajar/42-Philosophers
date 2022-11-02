@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/01 08:57:35 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 08:30:14 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	routine(void *arg)
 	while (philo->nb_of_eat != 0)
 	{
 		if (philo->i % 2)
-			usleep(1500);
+			usleep(100);
 		sem_wait(philo->set->sem);
 		ft_print("", philo, " has taken a fork\n");
 		sem_wait(philo->set->sem);
@@ -62,6 +62,32 @@ void	routine(void *arg)
 	}
 }
 
+int	ft_atoi(const char	*str)
+{
+	unsigned long long	i;
+	unsigned long long	b;
+	long				l;
+
+	l = 1;
+	i = 0;
+	b = 0;
+	while ((str[i] >= 7 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+	{
+		if (str[i] == '-')
+			l = -1;
+		i++;
+	}
+	while (str[i] >= '0' && str[i] <= '9')
+		b = b * 10 + (str[i++] - '0');
+	if (l == -1 && b >= 9223372036854775807)
+		return (0);
+	if (b >= 9223372036854775807)
+		return (-1);
+	return ((long)l * b);
+}
+
 int	main(int argc, char **argv)
 {
 	t_philo	arg;
@@ -71,15 +97,15 @@ int	main(int argc, char **argv)
 		if (!ft_check_arg(argv))
 			return (1);
 		arg.time_beg = get_time_now();
-		arg.nb = atoi(argv[1]);
+		arg.nb = ft_atoi(argv[1]);
 		gettimeofday(&arg.time_start, NULL);
-		arg.time_to_die = atoi(argv[2]);
-		arg.time_to_eat = atoi(argv[3]);
-		arg.time_to_sleep = atoi(argv[4]);
+		arg.time_to_die = ft_atoi(argv[2]);
+		arg.time_to_eat = ft_atoi(argv[3]);
+		arg.time_to_sleep = ft_atoi(argv[4]);
 		if (argc == 5)
 			arg.nb_of_eat = -1;
 		else
-			arg.nb_of_eat = atoi(argv[5]);
+			arg.nb_of_eat = ft_atoi(argv[5]);
 		if (ft_check(arg, argc))
 			philosophers1(arg);
 	}

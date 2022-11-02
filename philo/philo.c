@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/26 18:54:54 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/01 08:57:25 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 08:27:35 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	check_death(t_philo *arg)
 
 	i = get_time_now();
 	pthread_mutex_lock(&arg->set->eat);
-	if (i - arg->time_start > arg->time_to_die)
+	if (i - arg->time_start >= arg->time_to_die)
 	{
 		pthread_mutex_lock(&arg->set->dead);
 		pthread_mutex_lock(&arg->set->write);
@@ -31,10 +31,7 @@ void	check_death(t_philo *arg)
 		if (arg->nb_of_eat != -1)
 		{
 			if (arg->k[0] == 0)
-			{
 				arg->set->eated = 0;
-				exit(1);
-			}
 		}
 		pthread_mutex_unlock(&arg->set->eat);
 	}
@@ -80,14 +77,14 @@ void	routine(void *arg)
 	t_philo	*philo;
 
 	philo = arg;
-	while (1)
+	while (philo->set->eated)
 	{
 		pthread_mutex_lock(&philo->set->dead);
 		if (philo->set->death == 0)
 			break ;
 		pthread_mutex_unlock(&philo->set->dead);
 		if (philo->i % 2)
-			usleep(1500);
+			usleep(100);
 		pthread_mutex_lock(&philo->set->mutex[philo->i]);
 		ft_print("", philo, " has taken a fork\n");
 		pthread_mutex_lock(&philo->set->mutex[(philo->i + 1) % philo->nb]);
@@ -106,17 +103,19 @@ int	main(int argc, char **argv)
 	if (argc == 5 || argc == 6)
 	{
 		if (!ft_check_arg(argv))
+		{
 			return (1);
+		}
 		arg.time_beg = get_time_now();
-		arg.nb = atoi(argv[1]);
+		arg.nb = ft_atoi(argv[1]);
 		arg.time_start = get_time_now();
-		arg.time_to_die = atoi(argv[2]);
-		arg.time_to_eat = atoi(argv[3]);
-		arg.time_to_sleep = atoi(argv[4]);
+		arg.time_to_die = ft_atoi(argv[2]);
+		arg.time_to_eat = ft_atoi(argv[3]);
+		arg.time_to_sleep = ft_atoi(argv[4]);
 		if (argc == 5)
 			arg.nb_of_eat = -1;
 		else
-			arg.nb_of_eat = atoi(argv[5]);
+			arg.nb_of_eat = ft_atoi(argv[5]);
 		if (ft_check(arg, argc))
 			philosophers(arg);
 	}

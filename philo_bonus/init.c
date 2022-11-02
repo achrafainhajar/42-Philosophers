@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 08:48:16 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/01 09:03:02 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/02 08:28:15 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,15 @@ t_philo	*create_philos(t_philo *philo, t_philo arg, t_inside *tools, int i)
 
 	all = NULL;
 	all = malloc(sizeof(int));
+	if (all == NULL)
+		return (NULL);
 	if (arg.nb_of_eat != -1)
 		all[0] = (arg.nb * arg.nb_of_eat);
 	while (0 <= i--)
 	{
 		head = (t_philo *) malloc(sizeof(t_philo));
+		if (head == NULL)
+			return (NULL);
 		head->time_beg = arg.time_beg;
 		head->nb = arg.nb;
 		head->k = all;
