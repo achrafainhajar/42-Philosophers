@@ -6,12 +6,11 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/09 22:42:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/02 12:06:53 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/04 00:49:30 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"philo_bonus.h"
-#include <semaphore.h>
 
 void	eating(t_philo *philo)
 {

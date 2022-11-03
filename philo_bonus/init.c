@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 08:48:16 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/02 12:08:56 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/03 16:58:27 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ t_philo	*create_philos(t_philo arg, t_inside *tools, int i, int *all)
 	t_philo	*head;
 	t_philo	*philo;
 
+	philo = NULL;
 	while (0 <= i--)
 	{
 		head = (t_philo *) malloc(sizeof(t_philo));
@@ -93,6 +94,7 @@ void	philosophers1(t_philo	arg)
 {
 	t_inside	*tools;
 	t_philo		*philo;
+	t_philo		*head;
 	int			*all;
 
 	all = malloc(sizeof(int));
@@ -104,6 +106,7 @@ void	philosophers1(t_philo	arg)
 	tools = NULL;
 	tools = create_sem(tools, arg);
 	philo = create_philos(arg, tools, arg.nb - 1, all);
+	head = philo;
 	ft_supervisor(philo, arg);
-	w_process(philo);
+	w_process(head);
 }

@@ -6,7 +6,7 @@
 /*   By: aainhaja <aainhaja@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/30 08:50:14 by aainhaja          #+#    #+#             */
-/*   Updated: 2022/11/02 08:27:41 by aainhaja         ###   ########.fr       */
+/*   Updated: 2022/11/03 17:03:07 by aainhaja         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	*check_death(t_philo	*arg)
 		i = get_time_now();
 		sem_wait(arg->set->d);
 		b = arg->time_start.tv_sec * 1000 + arg->time_start.tv_usec / 1000;
-		if ((i - b) > arg->time_to_die && arg->i == 0)
+		if ((i - b) >= arg->time_to_die && arg->i == 0)
 		{
 			sem_wait(arg->set->write);
 			printf("%ld %d%s", (i - arg->time_beg), arg->i + 1, " Died\n");

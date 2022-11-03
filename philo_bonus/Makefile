@@ -1,9 +1,21 @@
-SRC = philo_bonus.c utils.c init.c utils2.c\
+SRC_BONUS = philo_bonus.c utils.c init.c utils2.c\
+
+OBJ_BONUS = $(SRC_BONUS:.c=.o)
 
 FLAGS = -Wall -Wextra -Werror
+
 CC = gcc
-all :
-	$(CC) $(FLAGS) $(SRC) -o philo_bonus
+NAME_BONUS = philo_bonus
+
+all : $(NAME_BONUS)
+	
+$(NAME_BONUS) : $(OBJ_BONUS)
+
+%.o: %.c
+	$(CC) $(FLAGS) -c $< -o $@
+
 clean :
-	rm -rf philo_bonus
+	rm -rf $(OBJ_BONUS)
+fclean :clean
+	rm -rf $(NAME_BONUS)
 re : clean all
